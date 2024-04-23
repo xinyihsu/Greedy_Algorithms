@@ -1,52 +1,81 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <utility>
 using namespace std;
 
+struct Lecture {
+    int startTime;
+    int endTime;
+    int num;
+};
+
+bool sortCompare(const Lecture&, const Lecture&);
+void printLectures(const vector<Lecture>& lectures);
+void printRooms(const vector<vector<Lecture>>& rooms);
+
 int main()
 {
-    int roomNum = 1;
-    vector<float> roomFT = {0};
-    vector<vector<int>> roomQueue;
-    int lecturesNum = 10;
-    // vector<pair<float, float>> lecturesTime = {{9, 10}, {11, 16}, {12.5, 13.5}, 
-    //     {10.5, 16}, {9.5, 14}, {10.5, 13}, {11.5, 15.5}, {12.5, 16.5}, {11, 12}, 
-    //     {9.5, 14}, {11.5, 17}, {9.5, 15.5}, {12, 17.5}, {11.5, 14}, {12.5, 15}, 
-    //     {11, 16}, {12, 17}, {15.5, 16.5}, {16.5, 17.5}, {9, 16}};
-    vector<pair<float, float>> lecturesTime = {{9, 10}, {9.5, 14}, 
-        {10.5, 16}, {10.5, 13}, {11, 16}, {11, 12}, {11.5, 15.5}, {12.5, 16.5}, {12.5, 13.5}, {16.5, 17.5}};
-    
+    vector<int> roomFT;
+    vector<vector<Lecture>> roomQueue;
+    int lecturesNum = 20;
+    vector<Lecture> lectures = {
+        {900, 1000}, {1100, 1600}, {1230, 1330}, {1030, 1600}, {930, 1400},
+        {1030, 1300}, {1130, 1530}, {1230, 1630}, {1100, 1200}, {930, 1400},
+        {1130, 1700}, {930, 1530}, {1200, 1730}, {1130, 1400}, {1230, 1500},
+        {1100, 1600}, {1200, 1700}, {1530, 1630}, {1630, 1730}, {900, 1600}
+    };
+
+    for (int i = 0; i < lecturesNum; i++) {
+        lectures[i].num = i + 1;
+    }
+
     //sort by starting time
-    // int index = 0;
-    // for (int i = 0; i < lecturesNum; i++) {
-    //     int min = 0;
-    //     //if (lecturesTime[])
-    // }
-    cout << 1111111;
+    sort(lectures.begin(), lectures.end(), sortCompare);
+    printLectures(lectures);
+
+
     for (int i = 0; i < lecturesNum; i++) {
         bool ifAdd = false;
-        for (int roomIndex = 0; roomIndex < roomNum; i++) {
-            if (lecturesTime[i].first >= roomFT[roomIndex]) {
-                roomQueue[roomIndex].push_back(i + 1);
-                roomFT[roomIndex] = lecturesTime[i].second;
+        for (int roomIndex = 0; roomIndex < roomFT.size(); i++) {
+            if (lectures[i].startTime >= roomFT[roomIndex]) {
+                roomFT[roomIndex] = lectures[i].endTime;
+                roomQueue[roomIndex].push_back(lectures[i]);
+                cout << i << " " << roomIndex << " " << roomFT[roomIndex] << endl;
                 ifAdd = true;
                 break;
             }
         }
         if (!ifAdd) {
-            roomNum++;
-            vector<int> newRoom = {i + 1};
+            roomFT.push_back(lectures[i].endTime);
+            vector<Lecture> newRoom = {lectures[i]};
             roomQueue.push_back(newRoom);            
-            roomFT.push_back(lecturesTime[i].second);
+            cout << "add";
         }
     }
-    cout << roomNum;
-    // for (int i = 0; i < roomNum; i++) {
-    //     cout << "room" << i << endl;
-    //     for (int j = 0; j < roomQueue[i].size(); j++) {
-    //         int index = roomQueue[i][j];
-    //         cout << index << " : " << lecturesTime[index].first << " " << lecturesTime[index].second << endl;
-    //     }
-    //     cout << endl;
-    // }
+    cout << roomFT.size() << endl;
+    printRooms(roomQueue);
+    cout << "end";
+}
+
+bool sortCompare(const Lecture& second, const Lecture& first) {
+    return second.startTime < first.startTime;
+}
+
+void printLectures(const vector<Lecture>& lectures) {
+    for (int i = 0; i < lectures.size(); i++) {
+        cout << lectures[i].num << " " << lectures[i].startTime << " " << lectures[i].endTime << endl;
+    }
+}
+
+void printRooms(const vector<vector<Lecture>>& rooms) {
+    int index = 1;
+    for (const vector<Lecture>& room : rooms) {
+        cout << "room:" << index;
+        for (const Lecture& lecture : room) {
+            cout << lecture.num << " " << lecture.startTime << " " << lecture.endTime << endl;
+        }
+        index++;
+        cout << endl;
+    }
 }
